@@ -30,6 +30,13 @@ uint32_t Encoder::getCpr(){
 	return this->cpr;
 }
 
+void Encoder::updatePos(){
+	
+}
+
+int16_t Encoder::calcPhiE_ext(){
+
+}
 
 void Encoder::setCpr(uint32_t cpr){
 	this->cpr = cpr;

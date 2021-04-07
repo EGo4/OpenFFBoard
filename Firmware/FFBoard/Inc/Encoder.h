@@ -24,7 +24,8 @@ public:
 
 	virtual int32_t getPos();
 	virtual void setPos(int32_t pos);
-
+	virtual void updatePos();
+	virtual int16_t calcPhiE_ext();
 
 	virtual uint32_t getCpr(); // Encoder counts per rotation
 	virtual void setCpr(uint32_t cpr);	// Encoder counts per rotation

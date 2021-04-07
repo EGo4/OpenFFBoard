@@ -182,6 +182,16 @@ void FFBWheel::update(){
 		pulseErrLed();
 		return;
 	}
+	// Process update routine of the encoder position
+	if (enc->getType() == EncoderType::absolute)
+	{
+		TMC4671* drv = static_cast<TMC4671*>(this->drv);
+		enc->updatePos();
+		drv->setPhiE_ext(enc->getPhiE_ext());
+	}
+
+	// Send encoder postion to tmc
+
 	// If either usb SOF or timer triggered
 	if(usb_update_flag || update_flag){
 		int32_t lastTorque = torque;

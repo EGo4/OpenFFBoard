@@ -66,7 +66,12 @@ void EncoderBissC::beginRequest(SPIPort::Pipe& pipe) {
 	pipe.beginRx(spi_buf, 8);
 }
 
-int32_t EncoderBissC::getPos(){
+int16_t EncoderBissC::calcPhiE_ext(){
+	return 0; // TODO: calculate correct value
+}
+
+void EncoderBissC::updatePos(){
+	
 	int32_t lastpos = pos;
 	memcpy(this->decod_buf,this->spi_buf,this->bytes);
 
@@ -121,7 +126,9 @@ int32_t EncoderBissC::getPos(){
 	if(!this->requestPending()){
 		requestPort();
 	}
+}
 
+int32_t EncoderBissC::getPos(){
 	return pos + mtpos * getCpr();
 }
 

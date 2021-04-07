@@ -27,9 +27,11 @@ public:
 
 	EncoderType getType();
 
+	void updatePos();
 	int32_t getPos();
 	void setPos(int32_t pos);
 	uint32_t getCpr();
+	int16_t calcPhi_ext();
 
 	ParseStatus command(ParsedCommand* cmd,std::string* reply);
 
