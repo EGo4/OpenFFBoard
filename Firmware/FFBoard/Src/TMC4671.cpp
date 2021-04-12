@@ -247,7 +247,7 @@ void TMC4671::update(){
 
 			// Get enable input
 			bool tmc_en = (readReg(0x76) >> 15) & 0x01;
-			if(!tmc_en){ // Hardware emergency
+			if(!tmc_en && active){ // Hardware emergency
 				this->estopTriggered = true;
 				state = TMC_ControlState::HardError;
 			}
@@ -1282,7 +1282,7 @@ __attribute__((optimize("-Ofast")))
 void TMC4671::writeReg(uint8_t reg,uint32_t dat){
 
 	// wait until ready
-	while(this->spi_busy || this->spi->State != HAL_SPI_STATE_READY){}
+	while(this->spi_busy){}
 	this->spi_busy = true;
 
 	spi_buf[0] = (uint8_t)(0x80 | reg);

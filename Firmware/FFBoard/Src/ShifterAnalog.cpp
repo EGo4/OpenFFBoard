@@ -33,8 +33,8 @@ ShifterAnalog::~ShifterAnalog() {
 void ShifterAnalog::updateAdc(){
 	uint8_t chans = 0;
 	volatile uint32_t* buf = getAnalogBuffer(&AIN_HADC,&chans);
-	x_val = buf[ADC_CHAN_FPIN+x_chan];
-	y_val = buf[ADC_CHAN_FPIN+y_chan];
+	x_val = buf[ADC_CHAN_FPIN+x_chan-1];
+	y_val = buf[ADC_CHAN_FPIN+y_chan-1];
 }
 
 void ShifterAnalog::calculateGear() {
@@ -149,9 +149,10 @@ void ShifterAnalog::saveFlash(){
 }
 
 void ShifterAnalog::restoreFlash(){
-	setMode(Flash_Read(ADR_SHIFTERANALOG_CONF, ShifterMode::G29_H));
 	std::tie(x_chan, y_chan) = unpack(Flash_Read(ADR_SHIFTERANALOG_CONF_2, pack(x_chan, y_chan)));
 	std::tie(reverseButtonNum, cs_pin_num) = unpack(Flash_Read(ADR_SHIFTERANALOG_CONF_3, pack(reverseButtonNum, cs_pin_num)));
+
+	setMode(Flash_Read(ADR_SHIFTERANALOG_CONF, ShifterMode::G29_H));
 
 	X_12 = Flash_Read(ADR_SHIFTERANALOG_X_12, X_12);
 	X_56 = Flash_Read(ADR_SHIFTERANALOG_X_56, X_56);

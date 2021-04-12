@@ -77,6 +77,46 @@ void HidFFB::sendStatusReport(uint8_t effect){
 	HID_SendReport(reinterpret_cast<uint8_t*>(&this->reportFFBStatus), sizeof(reportFFB_status_t));
 }
 
+void HidFFB::hidOutCmd(HID_Custom_Data_t* data){
+	bool found = true;
+	switch(data->cmd){
+		case HID_CMD_FFB_FRICTION:
+			if(data->type == HidCmdType::write)
+				this->setFrictionStrength(data->data);
+
+			if(data->type == HidCmdType::request){
+				data->data = this->getFrictionStrength();
+			}
+		break;
+
+		case HID_CMD_FFB_FXRATIO:
+			if(data->type == HidCmdType::write)
+				this->setFrictionStrength(data->data);
+
+			if(data->type == HidCmdType::request){
+				data->data = this->getFrictionStrength();
+			}
+		break;
+
+		case HID_CMD_FFB_IDLESPRING:
+			if(data->type == HidCmdType::write)
+				this->setIdleSpringStrength(data->data);
+
+			if(data->type == HidCmdType::request){
+				data->data = this->getIdleSpringStrength();
+			}
+		break;
+
+		default:
+			found = false;
+		break;
+	}
+
+	if(found){
+		sendHidCmd(data);
+	}
+}
+
 /*
  * Called when HID OUT data is received via USB
  */
@@ -150,7 +190,6 @@ void HidFFB::hidOut(uint8_t* report){
 	}
 
 	default:
-		printf("Got unknown HID command: %d",event_idx);
 		break;
 	}
 
@@ -187,7 +226,6 @@ void HidFFB::hidGet(uint8_t id,uint16_t len,uint8_t** return_buf){
 		*return_buf = (uint8_t*)(&this->pool_report);
 		break;
 	default:
-		printf("Unknown get\n");
 		break;
 	}
 }

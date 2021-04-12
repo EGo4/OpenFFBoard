@@ -28,7 +28,8 @@
 #include "TimerHandler.h"
 #include "ClassChooser.h"
 #include "ExtiHandler.h"
-
+#include "UsbHidHandler.h"
+#include "hid_cmd_defs.h"
 
 
 struct FFBWheelConfig{
@@ -40,7 +41,7 @@ struct FFBWheelConfig{
 
 
 
-class FFBWheel: public FFBoardMain, TimerHandler, PersistentStorage,ExtiHandler{
+class FFBWheel: public FFBoardMain, TimerHandler, PersistentStorage,ExtiHandler,UsbHidHandler{
 public:
 	FFBWheel();
 	virtual ~FFBWheel();
@@ -51,6 +52,7 @@ public:
 	void setupTMC4671();
 	void setupTMC4671_enc(PhiE enctype);
 	ParseStatus command(ParsedCommand* cmd,std::string* reply);
+
 
 	// Dynamic classes
 	void setDrvType(uint8_t drvtype);
@@ -69,6 +71,7 @@ public:
 	void usbInit(USBD_HandleTypeDef* hUsbDeviceFS); // initialize a composite usb device
 	void usbSuspend(); // Called on usb disconnect and suspend
 	void usbResume(); // Called on usb resume
+	void hidOutCmd(HID_Custom_Data_t* data); // Usb hid commands
 
 	void saveFlash();
 	void restoreFlash();
@@ -96,6 +99,7 @@ public:
 	uint16_t getPower();
 
 private:
+	bool encResetFlag = false;
 	bool emergency = false;
 	void send_report();
 	int16_t updateEndstop();

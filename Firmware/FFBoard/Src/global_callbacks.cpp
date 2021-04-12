@@ -16,6 +16,7 @@
 #include "constants.h"
 
 #include "UsbHidHandler.h"
+#include "PersistentStorage.h"
 #include "ExtiHandler.h"
 #include "UartHandler.h"
 #include "AdcHandler.h"
@@ -42,12 +43,12 @@ volatile uint32_t ADC3_BUF[ADC3_CHANNELS] = {0};
 extern ADC_HandleTypeDef hadc3;
 #endif
 
-volatile char uart_buf[UART_BUF_SIZE] = {0}; //
+volatile char uart_buf[UART_BUF_SIZE] = {0};
 
 
 // Externally stored so it can be used before the main class is initialized
 std::vector<CommandHandler*> cmdHandlers;
-
+std::vector<PersistentStorage*> flashHandlers;
 
 
 std::vector<AdcHandler*> adcHandlers;
@@ -229,9 +230,16 @@ void CDC_Finished(){
  * HID Out and Set Feature
  */
 UsbHidHandler* globalHidHandler = nullptr;
+std::vector<UsbHidHandler*> hidCmdHandlers; // called only for custom cmd report ids
 void USBD_OutEvent_HID(uint8_t* report){
 	if(globalHidHandler!=nullptr)
 		globalHidHandler->hidOut(report);
+
+	if(report[0] == HID_ID_CUSTOMCMD){ // called only for the vendor defined report
+		for(UsbHidHandler* c : hidCmdHandlers){
+			c->hidOutCmd((HID_Custom_Data_t*)(report));
+		}
+	}
 }
 /*
  * HID Get Feature
@@ -239,6 +247,7 @@ void USBD_OutEvent_HID(uint8_t* report){
 void USBD_GetEvent_HID(uint8_t id,uint16_t len,uint8_t** return_buf){
 	if(globalHidHandler!=nullptr)
 		globalHidHandler->hidGet(id, len, return_buf);
+
 }
 
 void USB_SOF(){
