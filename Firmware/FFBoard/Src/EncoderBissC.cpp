@@ -66,7 +66,7 @@ void EncoderBissC::beginRequest(SPIPort::Pipe& pipe) {
 	pipe.beginRx(spi_buf, 8);
 }
 
-int16_t EncoderBissC::calcPhiE_ext(){
+int16_t EncoderBissC::calcPhieExt(){
 	return 0; // TODO: calculate correct value
 }
 
@@ -129,7 +129,7 @@ void EncoderBissC::updatePos(){
 }
 
 int32_t EncoderBissC::getPos(){
-	return pos + mtpos * getCpr();
+	return pos + mtpos * getCpr() - offset;
 }
 
 int EncoderBissC::clz64(uint64_t bytes){

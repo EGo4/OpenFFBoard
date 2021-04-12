@@ -25,13 +25,17 @@ public:
 	virtual int32_t getPos();
 	virtual void setPos(int32_t pos);
 	virtual void updatePos();
-	virtual int16_t calcPhiE_ext();
+	virtual int16_t calcPhieExt();
+	virtual void setOffset(int32_t offset);
+	virtual void setPhieRot(int32_t phieRot);
 
 	virtual uint32_t getCpr(); // Encoder counts per rotation
 	virtual void setCpr(uint32_t cpr);	// Encoder counts per rotation
 
 private:
 	uint32_t cpr = 0;
+	int32_t offset = 0;
+	int32_t phieRot = 0;
 };
 
 #endif /* ENCODER_H_ */

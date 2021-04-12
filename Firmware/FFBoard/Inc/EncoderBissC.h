@@ -31,7 +31,9 @@ public:
 	int32_t getPos();
 	void setPos(int32_t pos);
 	uint32_t getCpr();
-	int16_t calcPhi_ext();
+	int16_t calcPhieExt();
+	void setOffset();
+	void setPhieRot();
 
 	ParseStatus command(ParsedCommand* cmd,std::string* reply);
 
@@ -60,6 +62,9 @@ private:
 	uint8_t POLY = 0x43;
 	uint8_t tableCRC6n[64] = {0};
 	int32_t numErrors = 0;
+
+	int32_t offset = 0;
+	int32_t phieRot = 0;
 };
 
 #endif /* ENCODERBISSC_H_ */

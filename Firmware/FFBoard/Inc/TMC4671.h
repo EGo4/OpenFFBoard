@@ -313,6 +313,8 @@ public:
 				"torqueP,torqueI,fluxP,fluxI\n"
 				"acttrq,seqpi,tmctemp\n";}
 
+	void setTMCRunning(){this->state = TMC_ControlState::Running;};
+
 
 private:
 	ENC_InitState encstate = ENC_InitState::uninitialized;

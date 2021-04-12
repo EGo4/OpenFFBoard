@@ -145,6 +145,8 @@ void FFBWheel::restoreFlash(){
 		this->fx_ratio_i = esval & 0xff;
 		this->endstop_gain_i = (esval >> 8) & 0xff;
 	}
+	if (enc->getType() == EncoderType::absolute)
+		setupAbsoluteEncoder(5000);
 
 	ffb->restoreFlash();
 }
@@ -177,14 +179,14 @@ void FFBWheel::update(){
 	}
 
 	// Process update routine of the encoder position
-	if (enc->getType() == EncoderType::absolute)
+	if (enc->getType() == EncoderType::absolute && this->conf.drvtype == TMC4671::info.id)
 	{
 		TMC4671* drv = static_cast<TMC4671*>(this->drv);
+		// update encoder position once
 		enc->updatePos();
-		drv->setPhiE_ext(enc->getPhiE_ext());
+		// Send encoder postion to tmc
+		drv->setPhiE_ext(enc->calcPhieExt());
 	}
-
-	// Send encoder postion to tmc
 
 	// If either usb SOF or timer triggered
 	if(usb_update_flag || update_flag){
@@ -259,6 +261,52 @@ void FFBWheel::update(){
 		}
 	}
 
+}
+
+// Setup routine for absolute Encoder i.e. find offset and PhiE
+void FFBWheel::setupAbsoluteEncoder(uint16_t power){
+	// update position internally
+	enc->updatePos();
+	// set the internal offset to currentposition
+	enc->setOffset(enc->getPos());
+	// rotate the motor to PhiE = 0
+	if(this->conf.drvtype == TMC4671::info.id){
+		TMC4671* drv = static_cast<TMC4671*>(this->drv);
+		if(!drv->hasPower() || (drv->conf.motconf.motor_type != MotorType::STEPPER && drv->conf.motconf.motor_type != MotorType::BLDC)){ // If not stepper or bldc return
+			return;
+		}
+
+		PhiE lastphie = drv->getPhiEtype();
+		MotionMode lastmode = drv->getMotionMode();
+		drv->setPhiE_ext(0);
+		drv->setUdUq(power, 0);
+		drv->setPhiEtype(PhiE::ext);
+		drv->setMotionMode(MotionMode::uqudext);
+
+		HAL_Delay(100);
+		enc->updatePos();
+		int16_t pos_old = enc->getPos();
+		HAL_Delay(250);
+		enc->updatePos();
+		int16_t pos = enc->getPos();;
+		int16_t c = 0;
+		while(abs(pos - pos_old) > 100 && c++ < 50){
+			pos_old = pos;
+			enc->updatePos();
+			pos = enc->getPos();
+			HAL_Delay(100);
+		}
+
+		// calculate the offset for PhiE
+		enc->setPhieRot(0); //TODO: calculate correct value
+
+		// savely end the motion and set the originall values
+		drv->setUdUq(0, 0);
+		drv->setPhiE_ext(0);
+		drv->setPhiEtype(lastphie);
+		drv->setMotionMode(lastmode);
+		drv->setTMCRunning();
+	}
 }
 
 /*
@@ -368,7 +416,6 @@ void FFBWheel::setupTMC4671(){
 }
 
 void FFBWheel::setEncType(uint8_t enctype){
-
 
 	if(enc_chooser.isValidClassId(enctype)){
 		if(enc != nullptr && enc->getInfo().id != enctype && enctype != drv->getInfo().id && enc->getInfo().id != drv->getInfo().id){
