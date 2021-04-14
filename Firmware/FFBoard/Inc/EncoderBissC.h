@@ -32,8 +32,8 @@ public:
 	void setPos(int32_t pos);
 	uint32_t getCpr();
 	int16_t calcPhieExt();
-	void setOffset();
-	void setPhieRot();
+	void setOffset(int32_t offset);
+	void setPhieRot(int32_t phieRot);
 
 	ParseStatus command(ParsedCommand* cmd,std::string* reply);
 

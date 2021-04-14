@@ -66,3 +66,5 @@ void EncoderLocal::overflowCallback(){
 		pos += htim->Instance->ARR+1;
 	}
 }
+//void EncoderLocal::setOffset(int32_t offset);
+//void EncoderLocal::setPhieRot(int32_t phieRot);

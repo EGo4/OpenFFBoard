@@ -9,7 +9,7 @@
 #define ENCODERLOCAL_H_
 
 #include "cppmain.h"
-#include <Encoder.h>
+#include "Encoder.h"
 #include "constants.h"
 #include "ExtiHandler.h"
 #include "TimerHandler.h"
@@ -29,7 +29,6 @@ public:
 
 	int32_t getPos();
 	void setPos(int32_t pos);
-	void setOffset(int32_t offset);
 	void setPeriod(uint32_t period);
 	void overflowCallback();
 	void exti(uint16_t GPIO_Pin);

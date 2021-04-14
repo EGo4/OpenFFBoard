@@ -128,6 +128,14 @@ void EncoderBissC::updatePos(){
 	}
 }
 
+void EncoderBissC::setOffset(int32_t offset){
+
+}
+
+void EncoderBissC::setPhieRot(int32_t phieRot){
+
+}
+
 int32_t EncoderBissC::getPos(){
 	return pos + mtpos * getCpr() - offset;
 }
