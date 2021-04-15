@@ -51,8 +51,6 @@ private:
 	void process(uint32_t* buf);
 	SPIConfig spi_config;
 
-	int clz64(uint64_t bytes);
-
 	int32_t pos = 0;
 	int32_t mtpos = 0;
 	uint8_t spi_buf[8] = {0}, decod_buf[8] = {0};

@@ -41,7 +41,6 @@ EncoderBissC::EncoderBissC() : spi_config{*getExternalSPI_CSPins()[1]} {
 		}
 		tableCRC6n[i] = crc;
 	}
-	//volatile int test = clz64(0b0000010000000000000000000000000000000000000000000000000000000000);
 }
 
 const SPIConfig& EncoderBissC::getConfig() const {
@@ -87,13 +86,7 @@ void EncoderBissC::updatePos(){
 	rxData64 |= (uint64_t)decod_buf[6] << 8;
 	rxData64 |= (uint64_t)decod_buf[7];
 
-	for(int i = 0; i < 64; i++){
-		if(!(0x8000000000000000 & rxData64))
-			rxData64<<=1;
-		else
-			break;
-	}
-	//TODO rxData64 <<= clz64(rxData64);
+	rxData64 <<= __builtin_clzll(rxData64);
 
 	rxData64 >>= 64 -(1+1+22+1+1+6); //Align bitstream to left (Startbit, CDS, 22-bit Position, Error, Warning, CRC)
 	volatile uint8_t crcRx = rxData64 & 0x3F; //AND with 6-bit mask to get CRC
@@ -138,14 +131,6 @@ void EncoderBissC::setPhieRot(int32_t phieRot){
 
 int32_t EncoderBissC::getPos(){
 	return pos + mtpos * getCpr() - offset;
-}
-
-int EncoderBissC::clz64(uint64_t bytes){
-	int cnt = __CLZ(((uint32_t*)bytes)[1]);	//high word
-
-	if(cnt == 32)
-		cnt += __CLZ(((uint32_t*)bytes)[0]);	//low word
-	return cnt;
 }
 
 void EncoderBissC::setPos(int32_t pos){
