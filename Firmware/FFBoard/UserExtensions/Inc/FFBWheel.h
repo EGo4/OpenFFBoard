@@ -140,6 +140,8 @@ private:
 
 	volatile bool usb_disabled = true;
 	void setupAbsoluteEncoder(uint16_t power);
+	bool init_bissc = false;
+	bool calibratedMiddle = false ;
 
 //	TMC4671PIDConf tmcpids = TMC4671PIDConf({
 //

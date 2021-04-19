@@ -66,10 +66,15 @@ void EncoderBissC::beginRequest(SPIPort::Pipe& pipe) {
 }
 
 int16_t EncoderBissC::calcPhieExt(){
-	return 0; // TODO: calculate correct value
+	return (1<<16) - (((pos>>4) & 0x0FFFF) - phieRot);
 }
-
-void EncoderBissC::updatePos(){
+void EncoderBissC::waitForPos(){
+	while(this->requestPending()){
+		external_spi.process();
+	}
+	this->updatePos(false);
+}
+void EncoderBissC::updatePos(bool requestCommunication){
 	
 	int32_t lastpos = pos;
 	memcpy(this->decod_buf,this->spi_buf,this->bytes);
@@ -116,20 +121,21 @@ void EncoderBissC::updatePos(){
 		mtpos++;
 	}
 
-	if(!this->requestPending()){
+	if(!this->requestPending() && requestCommunication){
 		requestPort();
 	}
 }
 
 void EncoderBissC::setOffset(int32_t offset){
-
+	this->offset = offset;
 }
 
-void EncoderBissC::setPhieRot(int32_t phieRot){
-
+void EncoderBissC::setPhieRot(int16_t phieRot){
+	this->phieRot = phieRot;
 }
 
 int32_t EncoderBissC::getPos(){
+	this->waitForPos();
 	return pos + mtpos * getCpr() - offset;
 }
 

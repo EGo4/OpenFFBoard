@@ -30,7 +30,7 @@ uint32_t Encoder::getCpr(){
 	return this->cpr;
 }
 
-void Encoder::updatePos(){
+void Encoder::updatePos(bool requestCommunication){
 	
 }
 
@@ -50,6 +50,6 @@ void Encoder::setPos(int32_t pos){
 void Encoder::setOffset(int32_t offset){
 	this->offset = offset;
 }
-void Encoder::setPhieRot(int32_t phieRot){
+void Encoder::setPhieRot(int16_t phieRot){
 	this->phieRot = phieRot;
 };

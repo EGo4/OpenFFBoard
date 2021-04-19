@@ -27,13 +27,13 @@ public:
 
 	EncoderType getType();
 
-	void updatePos();
+	void updatePos(bool requestCommunication);
 	int32_t getPos();
 	void setPos(int32_t pos);
 	uint32_t getCpr();
 	int16_t calcPhieExt();
 	void setOffset(int32_t offset);
-	void setPhieRot(int32_t phieRot);
+	void setPhieRot(int16_t phieRot);
 
 	ParseStatus command(ParsedCommand* cmd,std::string* reply);
 
@@ -50,6 +50,7 @@ public:
 private:
 	void process(uint32_t* buf);
 	SPIConfig spi_config;
+	void waitForPos();
 
 	int32_t pos = 0;
 	int32_t mtpos = 0;
@@ -62,7 +63,7 @@ private:
 	int32_t numErrors = 0;
 
 	int32_t offset = 0;
-	int32_t phieRot = 0;
+	int16_t phieRot = 0;
 };
 
 #endif /* ENCODERBISSC_H_ */
